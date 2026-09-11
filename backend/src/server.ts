@@ -12,9 +12,11 @@ import { runMigrations } from './config/db.js';
 import { seedDatabase } from './db/seed.js';
 
 dotenv.config();
-
-const app = express();
 const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 // Middleware
 app.use(cors({
