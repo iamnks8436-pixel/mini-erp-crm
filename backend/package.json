@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && cp -r src/db dist/db",
     "start": "node dist/server.js",
     "seed": "tsx src/db/seed.ts",
     "test": "tsx src/scripts/test-flow.ts"
