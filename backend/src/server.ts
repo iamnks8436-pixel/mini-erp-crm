@@ -13,22 +13,35 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { runMigrations } from './config/db.js';
 import { seedDatabase } from './db/seed.js';
 
-dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+dotenv.config();
 
 const app = express();
 
+const PORT = Number(process.env.PORT) || 5000;
 
-// =======================
+
+// --------------------
 // Middleware
-// =======================
+// --------------------
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: '*',
+    methods: [
+      'GET',
+      'POST',
+      'PUT',
+      'DELETE',
+      'OPTIONS'
+    ],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization'
+    ],
+  })
+);
+
 
 app.use(express.json());
 
@@ -40,12 +53,12 @@ app.use((req, res, next) => {
 });
 
 
-// =======================
+// --------------------
 // Health Check
-// =======================
+// --------------------
 
 app.get('/api/health', (req, res) => {
-  res.json({
+  res.status(200).json({
     status: 'ok',
     service: 'Mini ERP + CRM Operations Portal API',
     timestamp: new Date().toISOString(),
@@ -53,9 +66,9 @@ app.get('/api/health', (req, res) => {
 });
 
 
-// =======================
-// API Routes
-// =======================
+// --------------------
+// Routes
+// --------------------
 
 app.use('/api/auth', authRoutes);
 
@@ -70,9 +83,9 @@ app.use('/api/challans', challanRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
 
-// =======================
+// --------------------
 // 404 Handler
-// =======================
+// --------------------
 
 app.use((req, res) => {
   res.status(404).json({
@@ -82,18 +95,19 @@ app.use((req, res) => {
 });
 
 
-// =======================
+// --------------------
 // Error Handler
-// =======================
+// --------------------
 
 app.use(errorHandler);
 
 
-// =======================
+// --------------------
 // Start Server
-// =======================
+// --------------------
 
 async function startServer() {
+
   try {
 
     console.log('[Server] Initializing database and running migrations...');
@@ -106,15 +120,20 @@ async function startServer() {
     await seedDatabase();
 
 
-    const server = app.listen(PORT, () => {
 
-      console.log('===================================================');
-      console.log('  Mini ERP + CRM Operations Portal API');
-      console.log(`  Server running on port ${PORT}`);
-      console.log(`  Health Check: http://localhost:${PORT}/api/health`);
-      console.log('===================================================');
+    const server = app.listen(
+      PORT,
+      '0.0.0.0',
+      () => {
 
-    });
+        console.log('===================================================');
+        console.log(' Mini ERP + CRM Operations Portal API');
+        console.log(` Server running on port ${PORT}`);
+        console.log(` Health Check: /api/health`);
+        console.log('===================================================');
+
+      }
+    );
 
 
     return server;
@@ -122,18 +141,22 @@ async function startServer() {
 
   } catch (error) {
 
-    console.error('[Server] Fatal startup error:', error);
+    console.error(
+      '[Server] Fatal startup error:',
+      error
+    );
 
     process.exit(1);
 
   }
+
 }
+
 
 
 // Start only when not testing
 if (
-  process.env.NODE_ENV !== 'test' &&
-  !process.argv[1]?.includes('test')
+  process.env.NODE_ENV !== 'test'
 ) {
   startServer();
 }
